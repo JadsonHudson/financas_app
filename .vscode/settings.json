@@ -1,0 +1,8 @@
+{
+    "java.compile.nullAnalysis.mode": "disabled",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnType": true,
+    "notebook.formatOnSave.enabled": true
+}
