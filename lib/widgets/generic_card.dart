@@ -80,35 +80,51 @@ class _GenericCardState extends State<GenericCard> {
     }
   }
 
-  Widget isBottomOrTop(Widget child) {
-    if (widget.type == "top" || widget.type == "bottom") {
-      return Expanded(
-        child: child,
+  Widget isBottomOrTop() {
+    if (widget.type == "bottom") {
+      return Flexible(
+        child: Column(
+          children: [
+            if (hasHeaderWidget() != null) hasHeaderWidget()!,
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 24.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF37343b),
+                  borderRadius: getWidget(),
+                ),
+                child: Column(children: widget.children),
+              ),
+            ),
+          ],
+        ),
       );
     } else {
-      return child;
+      return SizedBox(
+        child: Column(
+          children: [
+            if (hasHeaderWidget() != null) hasHeaderWidget()!,
+            Container(
+              width: double.infinity,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF37343b),
+                borderRadius: getWidget(),
+              ),
+              child: Column(children: widget.children),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          if (hasHeaderWidget() != null) hasHeaderWidget()!,
-          Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 24.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF37343b),
-                    borderRadius: getWidget(),
-                  ),
-                  child: Column(children: widget.children),
-                ),
-        ],
-      ),
-    );
+    return isBottomOrTop();
   }
 }
 

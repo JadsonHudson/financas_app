@@ -1,5 +1,5 @@
 import 'package:financas_app/theme/images.dart';
-import 'package:financas_app/widgets/build_login_form.dart';
+import 'package:financas_app/widgets/build_sign_in_form.dart';
 import 'package:financas_app/widgets/build_sign_up_form.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black12,
+        backgroundColor: const Color(0xFF18171C),
         body: SafeArea(
             child: Padding(
                 padding:
@@ -35,8 +35,8 @@ class _SignInState extends State<SignIn> {
                           children: [
                             Image.asset(
                               AppImages.presentation,
-                              height: 196,
-                              width: 256,
+                              height: 128,
+                              width: 196,
                             ),
                             const SizedBox(height: 36.0),
                             Row(
@@ -108,7 +108,7 @@ class _SignInState extends State<SignIn> {
                           ],
                         ),
                         showLogin
-                            ? const BuildLoginForm()
+                            ? const BuildSigInForm()
                             : const BuildSignUpForm(),
                       ],
                     ),

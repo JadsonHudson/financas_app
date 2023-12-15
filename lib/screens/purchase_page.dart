@@ -1,3 +1,4 @@
+import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:flutter/material.dart';
 
@@ -295,13 +296,14 @@ class _PurchasePageState extends State<PurchasePage> {
           );
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         shape: const CircleBorder(),
         backgroundColor: const Color(0xFFFA4A0C),
         child: const Icon(Icons.add, color: Colors.white),
       ),
+      bottomNavigationBar: const BottomAppBarCustom(),
     );
   }
 }

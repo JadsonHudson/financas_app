@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "527423928116",
+    "project_id": "financas-app-ba040",
+    "storage_bucket": "financas-app-ba040.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527423928116:android:5f55257f19bccebb50d761",
+        "android_client_info": {
+          "package_name": "com.example.financas_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzrGU_ep2_J7KMH6HojaB3k5u8oAZnx_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

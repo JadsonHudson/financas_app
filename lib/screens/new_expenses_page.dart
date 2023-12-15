@@ -2,14 +2,14 @@ import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 
-class NewIncomePage extends StatefulWidget {
-  const NewIncomePage({Key? key}) : super(key: key);
+class NewExpensesPage extends StatefulWidget {
+  const NewExpensesPage({Key? key}) : super(key: key);
 
   @override
-  State<NewIncomePage> createState() => _NewIncomePageState();
+  State<NewExpensesPage> createState() => _NewExpensesPageState();
 }
 
-class _NewIncomePageState extends State<NewIncomePage> {
+class _NewExpensesPageState extends State<NewExpensesPage> {
   final TextEditingController _controller1 = TextEditingController();
   final TextEditingController _controller = TextEditingController();
   @override
@@ -40,7 +40,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
                       width: 16,
                     ),
                     const Text(
-                      'Nova Receita',
+                      'Nova Despesa',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -127,7 +127,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
                               horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF66BB6A)),
+                              color: const Color(0xFFD74D4E)),
                           child: const Text(
                             "Hoje",
                             style: TextStyle(color: Colors.white, fontSize: 14),
@@ -369,7 +369,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
                       child: Text(
                         "MAIS DETALHES",
                         style:
-                            TextStyle(color: Color(0xFF66BB6A), fontSize: 16),
+                            TextStyle(color: Color(0xFFD74D4E), fontSize: 16),
                       ),
                     ),
                   ))
@@ -379,7 +379,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF66BB6A),
+        backgroundColor: const Color(0xFFD74D4E),
         elevation: 0,
         splashColor: Colors.black54,
         shape: const CircleBorder(),
