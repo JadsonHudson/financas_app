@@ -1,14 +1,9 @@
 import 'dart:math';
 
-// import 'package:financas_app/screens/expenses_page.dart';
-// import 'package:financas_app/screens/income_page.dart';
-// import 'package:financas_app/screens/profile_page.dart';
-// import 'package:financas_app/screens/purchase_page.dart';
 import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/button_form.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/menu_nav_popup.dart';
-// import 'package:financas_app/widgets/nav_button_item.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

@@ -1,3 +1,4 @@
+import 'package:financas_app/services/auth.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  AuthService auth = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-       const Divider(
+            const Divider(
               color: Colors.white,
               thickness: 1,
             ),
@@ -216,7 +218,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.popUntil(context, ModalRoute.withName('/'));
+                try {
+                  auth.logout();
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                } catch (e) {
+                  print(e);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,

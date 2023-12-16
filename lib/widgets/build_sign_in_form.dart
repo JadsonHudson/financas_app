@@ -14,8 +14,8 @@ class BuildSigInForm extends StatefulWidget {
 }
 
 class _BuildSigInFormState extends State<BuildSigInForm> {
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller2 = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _auth = AuthService();
   String email = '';
@@ -27,7 +27,7 @@ class _BuildSigInFormState extends State<BuildSigInForm> {
       child: Column(children: [
         InputField(
             label: "E-mail ou Nome de Usuário",
-            controller: _controller1,
+            controller: _emailController,
             hint: "jadson hudson",
             keyboardType: TextInputType.emailAddress,
             onChanged: (newEmail) => {
@@ -38,7 +38,7 @@ class _BuildSigInFormState extends State<BuildSigInForm> {
         const SizedBox(height: 12.0),
         InputField(
             label: "Senha",
-            controller: _controller2,
+            controller: _passwordController,
             hint: "senha",
             keyboardType: const TextInputType.numberWithOptions(decimal: false),
             onChanged: (newPassword) => {
@@ -71,7 +71,7 @@ class _BuildSigInFormState extends State<BuildSigInForm> {
                 await _auth
                     .signIn(email, password)
                     .then((value) =>
-                        Navigator.pushReplacementNamed(context, '/HomePage'))
+                        Navigator.pushReplacementNamed(context, '/HomePage', arguments: value.user!.uid))
                     .catchError((onError) => { 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
