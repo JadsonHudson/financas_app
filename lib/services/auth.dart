@@ -11,4 +11,8 @@ class AuthService {
     return auth.createUserWithEmailAndPassword(
         email: email, password: password);
   }
+
+  void logout() async {
+    await auth.signOut().then((value) => print("User Logout"));
+  }
 }
