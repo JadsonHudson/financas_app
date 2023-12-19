@@ -18,7 +18,7 @@ class UserController {
     userService = UserService();
   }
 
-  Future<Map<bool, String>> signUp(String email, String password) async {
+  Future<bool> signUp(String email, String password) async {
     try {
       UserCredential userResponse = await _auth.signUp(email, password);
       if (userResponse.user != null) {
@@ -42,13 +42,13 @@ class UserController {
             .createAccount(account)
             .then((value) => print('Account created'))
             .catchError((onError) => {print(onError)});
-        return {true: account.id};
+        return true;
       } else {
         throw Exception('Internal Error');
       }
     } catch (e) {
       print(e);
-      return {false: e.toString()};
+      return false;
     }
   }
 }

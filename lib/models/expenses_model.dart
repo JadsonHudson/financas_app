@@ -1,22 +1,26 @@
-import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Expenses {
-  final String? uid;
-  final Double value;
+class ExpensesModel {
+ final String? id;
+  final double value;
   final String? description;
-  final String date;
-  final Bool payed;
+  final Timestamp date;
+  final bool payed;
   final String category;
+  
+  final bool? favorite;
   final String? fileRefs;
   final String moneyType;
 
-  Expenses(
+  ExpensesModel(
       {required this.value,
       required this.description,
       required this.date,
       required this.payed,
       required this.category,
+      
+      this.favorite = false,
       this.fileRefs,
       required this.moneyType,
-      this.uid});
+         this.id});
 }

@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:financas_app/controllers/expenses_controller.dart';
+import 'package:financas_app/models/expenses_model.dart';
+
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/input_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewExpensesPage extends StatefulWidget {
@@ -10,8 +15,36 @@ class NewExpensesPage extends StatefulWidget {
 }
 
 class _NewExpensesPageState extends State<NewExpensesPage> {
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _valueController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  late ExpensesController expensesController;
+  late ExpensesModel _newExpenses;
+  User? user = FirebaseAuth.instance.currentUser;
+  final String _moneyType = "BRL";
+  bool _payed = true;
+  bool _favorite = false;
+  String description = "";
+  Timestamp date = Timestamp.now();
+  String _category = "Investimento";
+  @override
+  void initState() {
+    super.initState();
+    expensesController = ExpensesController();
+
+    _descriptionController.addListener(() {
+      setState(() {
+        description = _descriptionController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _valueController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +92,7 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                     child: InputField(
                         label: "Valor da receita",
                         hint: "0,00",
-                        controller: _controller1,
+                        controller: _valueController,
                         keyboardType: TextInputType.number),
                   ),
                   ElevatedButton(
@@ -70,13 +103,14 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text(
-                            "BRL",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                            _moneyType,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 14),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.white,
                           )
@@ -96,15 +130,21 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                         const Icon(Icons.check_circle,
                             size: 28, color: Colors.grey),
                         const SizedBox(width: 32),
-                        const Text(
-                          "Pago",
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        Text(
+                          "${_payed ? "" : "Não "}" "Recebido",
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                         const Spacer(),
-                        IconButton(
-                          onPressed: () => {},
-                          icon: const Icon(Icons.calendar_month),
-                          color: Colors.grey,
+                        Checkbox(
+                          value: _payed,
+                          onChanged: (bool? newValue) {
+                            setState(() {
+                              _payed = newValue!;
+                            });
+                          },
+                          activeColor: Colors.white,
+                          checkColor: Colors.green,
                         )
                       ],
                     ),
@@ -122,39 +162,71 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                         const Icon(Icons.calendar_month_outlined,
                             size: 28, color: Colors.grey),
                         const SizedBox(width: 32),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFFD74D4E)),
-                          child: const Text(
-                            "Hoje",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () =>
+                              {setState(() => date = Timestamp.now())},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFFD74D4E)),
+                            child: const Text(
+                              "Hoje",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF4D4D55)),
-                          child: const Text(
-                            "Ontem",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () => {
+                            setState(() => date = Timestamp.fromDate(
+                                DateTime.now()
+                                    .subtract(const Duration(days: 1))))
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFF4D4D55)),
+                            child: const Text(
+                              "Ontem",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF4D4D55)),
-                          child: const Text(
-                            "Outros...",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () => {},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFF4D4D55)),
+                            child: const Text(
+                              "Outros...",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -178,16 +250,22 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                               child: InputField(
                                 label: "",
                                 hint: "Descrição",
-                                controller: _controller,
+                                controller: _descriptionController,
                                 keyboardType: TextInputType.text,
                               )),
                         ),
                         const SizedBox(width: 12),
                         IconButton(
-                          icon: const Icon(Icons.favorite_border_outlined),
+                          icon: Icon(_favorite
+                              ? Icons.favorite_outlined
+                              : Icons.favorite_border_outlined),
                           iconSize: 28,
                           color: Colors.grey,
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              _favorite = !_favorite;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -225,9 +303,9 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                                       color: Colors.blue.shade400,
                                     ),
                                     const SizedBox(width: 12),
-                                    const Text(
-                                      "Investimento",
-                                      style: TextStyle(
+                                    Text(
+                                      _category,
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal),
@@ -331,7 +409,7 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
                               TextButton(
                                 onPressed: () {},
                                 child: const Text(
-                                  "Carteira",
+                                  "Anexo",
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -388,7 +466,19 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
           size: 28,
           color: Colors.white,
         ),
-        onPressed: () {},
+        onPressed: () {
+          _newExpenses = ExpensesModel(
+            value: double.parse(_valueController.text),
+            description: _descriptionController.text,
+            date: date,
+            payed: _payed,
+            favorite: _favorite,
+            category: _category,
+            moneyType: _moneyType,
+          );
+          expensesController.createExpense(user!.uid, _newExpenses);
+          Navigator.pop(context, _newExpenses);
+        },
       ),
     );
   }

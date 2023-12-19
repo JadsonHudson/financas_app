@@ -4,11 +4,13 @@ import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/button_form.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/menu_nav_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+  const HomePage({
+    Key? key,
+  }) : super(key: key);
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -16,6 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  User? user = FirebaseAuth.instance.currentUser;
+
   bool toggle = false;
   late Animation _animation;
 
@@ -79,10 +83,7 @@ class _HomePageState extends State<HomePage>
                               IconButton(
                                 icon: const Icon(Icons.person),
                                 onPressed: () => {
-                                  Navigator.pushNamed(
-                                      context,
-                                      '/ProfilePage'
-                                              )
+                                  Navigator.pushNamed(context, '/ProfilePage')
                                 },
                                 color: const Color(0xFFFA4A0C),
                                 iconSize: 48.0,
@@ -112,10 +113,7 @@ class _HomePageState extends State<HomePage>
                               child: Column(children: [
                             ElevatedButton(
                               onPressed: () => {
-                                 Navigator.pushNamed(
-                                      context,
-                                      '/PurchasePage'
-                                              )
+                                Navigator.pushNamed(context, '/PurchasePage')
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -154,10 +152,7 @@ class _HomePageState extends State<HomePage>
                             children: [
                               ElevatedButton(
                                 onPressed: () => {
-                                   Navigator.pushNamed(
-                                      context,
-                                      "/IncomePage"
-                                              )
+                                  Navigator.pushNamed(context, "/IncomePage")
                                 },
                                 style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.transparent,
@@ -200,9 +195,7 @@ class _HomePageState extends State<HomePage>
                               ),
                               ElevatedButton(
                                 onPressed: () => {
-                                    Navigator.pushNamed(
-                                      context,
-                                     '/ExpensesPage')
+                                  Navigator.pushNamed(context, '/ExpensesPage')
                                 },
                                 style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.transparent,
@@ -502,7 +495,8 @@ class _HomePageState extends State<HomePage>
               child: MenuNavPopup(
                   toggle: toggle,
                   controller: _controller,
-                  onToggle: toggleAnimation))
+                  onToggle: toggleAnimation,
+                  userId: user!.uid))
         ]),
         extendBody: true,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

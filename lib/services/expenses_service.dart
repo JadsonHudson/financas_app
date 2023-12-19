@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financas_app/models/expenses_model.dart';
 
 class ExpensesService {
-  final CollectionReference expensesRef = FirebaseFirestore.instance.collection('account').doc('expenses').collection('expenses');
+  final CollectionReference expensesRef =
+      FirebaseFirestore.instance.collection('accounts');
 
-  Future<DocumentReference<Object?>> createExpenses(Expenses expenses) async {
-    return await expensesRef.add({
+  Future<DocumentReference<Object?>> createExpensesCollection(
+      String userId, ExpensesModel expenses) async {
+    return await expensesRef.doc(userId).collection('expenses').add({
       'value': expenses.value,
       'description': expenses.description,
       'date': expenses.date,
@@ -16,8 +18,13 @@ class ExpensesService {
     });
   }
 
-  Future<void> updateExpenses(String id, Expenses expenses) async {
-    return await expensesRef.doc(id).update({
+  Future<void> updateExpenses(
+      String userId, String expensesId, ExpensesModel expenses) async {
+    return await expensesRef
+        .doc(userId)
+        .collection('expenses')
+        .doc(expensesId)
+        .update({
       'value': expenses.value,
       'description': expenses.description,
       'date': expenses.date,
@@ -28,13 +35,21 @@ class ExpensesService {
     });
   }
 
-  Future<void> deleteExpenses(String id) async {
-    return await expensesRef.doc(id).delete();
+  Future<void> deleteExpenses(String userId, String expensesId) async {
+    return await expensesRef
+        .doc(userId)
+        .collection('expenses')
+        .doc(expensesId)
+        .delete();
   }
 
-  Future<Expenses> getExpenses(String id) async {
-    DocumentSnapshot doc = await expensesRef.doc(id).get();
-    return Expenses(
+  Future<ExpensesModel> getExpenses(String userId, String expensesId) async {
+    DocumentSnapshot doc = await expensesRef
+        .doc(userId)
+        .collection('expenses')
+        .doc(expensesId)
+        .get();
+    return ExpensesModel(
       value: doc['value'],
       description: doc['description'],
       date: doc['date'],
@@ -42,7 +57,26 @@ class ExpensesService {
       category: doc['category'],
       fileRefs: doc['fileRefs'],
       moneyType: doc['moneyType'],
-      uid: doc.id,
+      id: doc.id,
     );
+  }
+
+  Future<List<ExpensesModel>> getAllExpenses(String userId) async {
+    QuerySnapshot<Object?> querySnapshot = await expensesRef
+        .doc(userId)
+        .collection('expenses')
+        .get();
+    return querySnapshot.docs
+        .map((doc) => ExpensesModel(
+              value: doc['value'],
+              description: doc['description'],
+              date: doc['date'],
+              payed: doc['payed'],
+              category: doc['category'],
+              fileRefs: doc['fileRefs'],
+              moneyType: doc['moneyType'],
+              id: doc.id,
+            ))
+        .toList();
   }
 }

@@ -74,11 +74,15 @@ class _BuildSignUpFormState extends State<BuildSignUpForm> {
               onPressed: () async {
                 if (_formKey.currentState!.validate() &&
                     _password == _confirmationPassword) {
-                  bool sucess = await userController.signUp(_email, _password);
+                  Map<bool, String> result =
+                      await userController.signUp(_email, _password);
+                  bool sucess = result.keys.first;
+                  String accountId = result.values.first;
                   if (sucess) {
                     // ignore: use_build_context_synchronously
-                    Navigator.pushReplacementNamed(context, '/HomePage');
-                  }else {
+                    Navigator.pushReplacementNamed(context, '/HomePage',
+                        arguments: accountId);
+                  } else {
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

@@ -6,8 +6,8 @@ class Account {
   final double total;
   final double totalIncomes;
   final double totalExpenses;
-  final List<Incomes>? incomes;
-  final List<Expenses>? expenses;
+  final List<IncomesModel>? incomes;
+  final List<ExpensesModel>? expenses;
   Account(
       {this.total = 0.0,
       this.totalIncomes = 0.0,

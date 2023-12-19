@@ -1,5 +1,7 @@
 // import 'package:financas_app/screens/home_page.dart';
 // import 'package:financas_app/screens/welcome_to_app.dart';
+import 'dart:developer';
+
 import 'package:financas_app/services/auth.dart';
 import 'package:financas_app/widgets/button_form.dart';
 import 'package:financas_app/widgets/input_field.dart';
@@ -66,13 +68,13 @@ class _BuildSigInFormState extends State<BuildSigInForm> {
             buttonText: "Entrar",
             hasBackgroundColor: true,
             onPressed: () async {
-              
               if (_formKey.currentState!.validate()) {
-                await _auth
-                    .signIn(email, password)
-                    .then((value) =>
-                        Navigator.pushReplacementNamed(context, '/HomePage', arguments: value.user!.uid))
-                    .catchError((onError) => { 
+                await _auth.signIn(email, password).then((value) {
+                  log("Error do tipo null --> ${value.user!.uid}");
+                  Navigator.pushReplacementNamed(context, '/HomePage',
+                      arguments: value.user!.uid);
+                // ignore: invalid_return_type_for_catch_error
+                }).catchError((onError) => {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(onError.toString()),

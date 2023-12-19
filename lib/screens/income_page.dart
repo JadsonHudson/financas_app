@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/menu_nav_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class IncomePage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _IncomePageState extends State<IncomePage>
   late AnimationController _controller;
   bool toggle = false;
   late Animation _animation;
+  User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -356,7 +358,8 @@ class _IncomePageState extends State<IncomePage>
               child: MenuNavPopup(
                   toggle: toggle,
                   controller: _controller,
-                  onToggle: toggleAnimation))
+                  onToggle: toggleAnimation,
+                  userId: user!.uid))
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

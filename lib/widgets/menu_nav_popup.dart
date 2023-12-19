@@ -1,5 +1,6 @@
 // import 'package:financas_app/screens/new_expenses_page.dart';
 // import 'package:financas_app/screens/new_income_page.dart';
+
 import 'package:financas_app/widgets/menu_button_item.dart';
 import 'package:flutter/material.dart';
 
@@ -7,11 +8,13 @@ class MenuNavPopup extends StatefulWidget {
   final bool toggle;
   final AnimationController controller;
   final VoidCallback onToggle;
+  final String userId;
   const MenuNavPopup(
       {Key? key,
       required this.toggle,
       required this.controller,
-      required this.onToggle})
+      required this.onToggle,
+      required this.userId})
       : super(key: key);
 
   @override
@@ -20,7 +23,6 @@ class MenuNavPopup extends StatefulWidget {
 
 class _MenuNavPopupState extends State<MenuNavPopup> {
   late bool toggle = widget.toggle;
-
   Alignment alignment1 = const Alignment(0.0, 1.1);
   Alignment alignment2 = const Alignment(0.0, 1.1);
   Alignment alignment3 = const Alignment(0.0, 1.1);
@@ -77,7 +79,13 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
@@ -109,7 +117,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                               curve: toggle ? Curves.easeIn : Curves.easeOut,
                               child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 275),
-                                  curve: toggle ? Curves.easeIn : Curves.easeOut,
+                                  curve:
+                                      toggle ? Curves.easeIn : Curves.easeOut,
                                   height: 96,
                                   width: 96,
                                   child: MenuButtonItem(
@@ -127,7 +136,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                               curve: toggle ? Curves.easeIn : Curves.easeOut,
                               child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 275),
-                                  curve: toggle ? Curves.easeIn : Curves.easeOut,
+                                  curve:
+                                      toggle ? Curves.easeIn : Curves.easeOut,
                                   height: 96,
                                   width: 96,
                                   child: MenuButtonItem(
@@ -135,7 +145,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                                     label: 'Receita',
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, "/NewIncomePage");
+                                          context, "/NewIncomePage",
+                                          arguments: widget.userId);
                                     },
                                     color: Colors.green.shade400,
                                   )),
@@ -148,7 +159,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                               curve: toggle ? Curves.easeIn : Curves.easeOut,
                               child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 275),
-                                  curve: toggle ? Curves.easeIn : Curves.easeOut,
+                                  curve:
+                                      toggle ? Curves.easeIn : Curves.easeOut,
                                   height: 96,
                                   width: 96,
                                   child: MenuButtonItem(
@@ -166,7 +178,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                               curve: toggle ? Curves.easeIn : Curves.easeOut,
                               child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 275),
-                                  curve: toggle ? Curves.easeIn : Curves.easeOut,
+                                  curve:
+                                      toggle ? Curves.easeIn : Curves.easeOut,
                                   height: 96,
                                   width: 96,
                                   child: MenuButtonItem(
@@ -174,7 +187,8 @@ class _MenuNavPopupState extends State<MenuNavPopup> {
                                     label: 'Despesa',
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/NewExpensesPage');
+                                          context, '/NewExpensesPage',
+                                          arguments: widget.userId);
                                     },
                                     color: Colors.red.shade400,
                                   )),

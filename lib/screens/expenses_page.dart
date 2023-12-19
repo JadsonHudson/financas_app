@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:financas_app/controllers/expenses_controller.dart';
+import 'package:financas_app/models/expenses_model.dart';
 import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/menu_nav_popup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ExpensesPage extends StatefulWidget {
@@ -12,10 +15,14 @@ class ExpensesPage extends StatefulWidget {
   State<ExpensesPage> createState() => _ExpensesPageState();
 }
 
-class _ExpensesPageState extends State<ExpensesPage>  with SingleTickerProviderStateMixin{
-   late AnimationController _controller;
+class _ExpensesPageState extends State<ExpensesPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   bool toggle = false;
-  late Animation _animation;@override
+  late Animation _animation;
+  User? user = FirebaseAuth.instance.currentUser;
+  ExpensesController expensesController = ExpensesController();
+  @override
   void initState() {
     super.initState();
     _controller = AnimationController(
@@ -30,7 +37,8 @@ class _ExpensesPageState extends State<ExpensesPage>  with SingleTickerProviderS
       setState(() {});
     });
   }
-void toggleAnimation() {
+
+  void toggleAnimation() {
     setState(() {
       if (toggle) {
         toggle = !toggle;
@@ -41,13 +49,15 @@ void toggleAnimation() {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints viewportConstraints) {
+            builder:
+                (BuildContext context, BoxConstraints viewportConstraints) {
               return ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: viewportConstraints.maxHeight,
@@ -166,7 +176,8 @@ void toggleAnimation() {
                                       width: 12,
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           "Total pendente",
@@ -197,7 +208,8 @@ void toggleAnimation() {
                                       width: 12,
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           "Saldo previsto",
@@ -232,14 +244,16 @@ void toggleAnimation() {
                               SizedBox(
                                 width: double.infinity,
                                 child: Row(
-                                  
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           const Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 20.0),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 4.0,
+                                                vertical: 20.0),
                                             child: Text(
                                               "Hoje",
                                               style: TextStyle(
@@ -250,7 +264,8 @@ void toggleAnimation() {
                                           ),
                                           Row(children: [
                                             Container(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               decoration: BoxDecoration(
                                                 color: Colors.red.shade400,
                                                 shape: BoxShape.circle,
@@ -265,46 +280,58 @@ void toggleAnimation() {
                                             ),
                                             Expanded(
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   const Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         "Saldo atual",
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.w500),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
                                                       ),
                                                       Text(
                                                         "Saldo previsto",
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.w500),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
                                                       ),
                                                     ],
                                                   ),
-                                                  
                                                   Column(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         "R\$0,00",
                                                         style: TextStyle(
-                                                            color: Colors.red.shade400,
+                                                            color: Colors
+                                                                .red.shade400,
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.w500),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
                                                       ),
                                                       const Text(
                                                         "R\$0,00",
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.w500),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
                                                       ),
                                                     ],
                                                   )
@@ -319,7 +346,42 @@ void toggleAnimation() {
                                 ),
                               )
                             ],
-                          )
+                          ),
+                          FutureBuilder<List<ExpensesModel>>(
+                            future:
+                                expensesController.getAllExpenses(user!.uid),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<ExpensesModel>> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                // snapshot.data!.forEach((e) => print(e.value.toString()));
+                                return SizedBox(
+                                  height: 256,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ListView.builder(
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (_, index) {
+                                      ExpensesModel expenses =
+                                          snapshot.data![index];
+                                      return ListTile(
+                                        title: Text(
+                                          expenses.value.toString(),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                        // Adicione mais detalhes aqui
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ],
                       )
                     ]),
@@ -328,41 +390,43 @@ void toggleAnimation() {
               );
             },
           ),
-        
           Visibility(
               visible: toggle,
               child: MenuNavPopup(
-                  toggle: toggle,
-                  controller: _controller,
-                  onToggle: toggleAnimation))],
+                toggle: toggle,
+                controller: _controller,
+                onToggle: toggleAnimation,
+                userId: user!.uid,
+              ))
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Transform.rotate(
-          angle: _animation.value * pi * (3 / 4),
-          child: AnimatedContainer(
-              duration: const Duration(milliseconds: 375),
-              height: 56,
-              width: 56,
-              curve: Curves.easeOut,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFA4A0C),
-                borderRadius: BorderRadius.circular(50),
+        angle: _animation.value * pi * (3 / 4),
+        child: AnimatedContainer(
+            duration: const Duration(milliseconds: 375),
+            height: 56,
+            width: 56,
+            curve: Curves.easeOut,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFA4A0C),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              splashColor: Colors.black54,
+              shape: const CircleBorder(),
+              child: const Icon(
+                Icons.add,
+                size: 27,
+                color: Colors.white,
               ),
-              child: FloatingActionButton(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                splashColor: Colors.black54,
-                shape: const CircleBorder(),
-                child: const Icon(
-                  Icons.add,
-                  size: 27,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  toggleAnimation();
-                },
-              )),
-        ),
+              onPressed: () {
+                toggleAnimation();
+              },
+            )),
+      ),
       bottomNavigationBar: const BottomAppBarCustom(),
     );
   }

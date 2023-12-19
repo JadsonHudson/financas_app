@@ -1,3 +1,7 @@
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:financas_app/controllers/incomes_controller.dart';
+import 'package:financas_app/models/incomes_model.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/input_field.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +14,35 @@ class NewIncomePage extends StatefulWidget {
 }
 
 class _NewIncomePageState extends State<NewIncomePage> {
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _valueController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  late IncomesController incomesController;
+  late IncomesModel _newIncomes;
+  final String _moneyType = "BRL";
+  bool _received = true;
+  bool _favorite = false;
+  String description = "";
+  FieldValue date = FieldValue.serverTimestamp();
+  String _category = "Investimento";
+  @override
+  void initState() {
+    super.initState();
+    incomesController = IncomesController();
+
+    _descriptionController.addListener(() {
+      setState(() {
+        description = _descriptionController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _valueController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +90,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
                     child: InputField(
                         label: "Valor da receita",
                         hint: "0,00",
-                        controller: _controller1,
+                        controller: _valueController,
                         keyboardType: TextInputType.number),
                   ),
                   ElevatedButton(
@@ -70,13 +101,14 @@ class _NewIncomePageState extends State<NewIncomePage> {
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text(
-                            "BRL",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                            _moneyType,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 14),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.white,
                           )
@@ -96,15 +128,21 @@ class _NewIncomePageState extends State<NewIncomePage> {
                         const Icon(Icons.check_circle,
                             size: 28, color: Colors.grey),
                         const SizedBox(width: 32),
-                        const Text(
-                          "Pago",
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        Text(
+                          "${_received ? "" : "Não "}" "Recebido",
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                         const Spacer(),
-                        IconButton(
-                          onPressed: () => {},
-                          icon: const Icon(Icons.calendar_month),
-                          color: Colors.grey,
+                        Checkbox(
+                          value: _received,
+                          onChanged: (bool? newValue) {
+                            setState(() {
+                              _received = newValue!;
+                            });
+                          },
+                          activeColor: Colors.white,
+                          checkColor: Colors.green,
                         )
                       ],
                     ),
@@ -122,39 +160,73 @@ class _NewIncomePageState extends State<NewIncomePage> {
                         const Icon(Icons.calendar_month_outlined,
                             size: 28, color: Colors.grey),
                         const SizedBox(width: 32),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF66BB6A)),
-                          child: const Text(
-                            "Hoje",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () => {
+                            setState(() => date = FieldValue.serverTimestamp())
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFF66BB6A)),
+                            child: const Text(
+                              "Hoje",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF4D4D55)),
-                          child: const Text(
-                            "Ontem",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () => {
+                            setState(() => date = Timestamp.fromDate(
+                                    DateTime.now()
+                                        .subtract(const Duration(days: 1)))
+                                as FieldValue)
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFF4D4D55)),
+                            child: const Text(
+                              "Ontem",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF4D4D55)),
-                          child: const Text(
-                            "Outros...",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                        ElevatedButton(
+                          onPressed: () => {},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              padding: const EdgeInsets.all(0)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFF4D4D55)),
+                            child: const Text(
+                              "Outros...",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -178,16 +250,22 @@ class _NewIncomePageState extends State<NewIncomePage> {
                               child: InputField(
                                 label: "",
                                 hint: "Descrição",
-                                controller: _controller,
+                                controller: _descriptionController,
                                 keyboardType: TextInputType.text,
                               )),
                         ),
                         const SizedBox(width: 12),
                         IconButton(
-                          icon: const Icon(Icons.favorite_border_outlined),
+                          icon: Icon(_favorite
+                              ? Icons.favorite_outlined
+                              : Icons.favorite_border_outlined),
                           iconSize: 28,
                           color: Colors.grey,
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              _favorite = !_favorite;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -225,9 +303,9 @@ class _NewIncomePageState extends State<NewIncomePage> {
                                       color: Colors.blue.shade400,
                                     ),
                                     const SizedBox(width: 12),
-                                    const Text(
-                                      "Investimento",
-                                      style: TextStyle(
+                                    Text(
+                                      _category,
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal),
@@ -331,9 +409,9 @@ class _NewIncomePageState extends State<NewIncomePage> {
                               TextButton(
                                 onPressed: () {},
                                 child: const Text(
-                                  "Carteira",
+                                  "Anexo",
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.grey,
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal),
                                 ),
@@ -388,7 +466,20 @@ class _NewIncomePageState extends State<NewIncomePage> {
           size: 28,
           color: Colors.white,
         ),
-        onPressed: () {},
+        onPressed: () {
+          _newIncomes = IncomesModel(
+            value: double.parse(_valueController.text),
+            description: _descriptionController.text,
+            date: date,
+            received: _received,
+            favorite: _favorite,
+            category: _category,
+            moneyType: _moneyType,
+            accountId: ModalRoute.of(context)?.settings.arguments as String,
+          );
+          incomesController.createIncome(_newIncomes.accountId, _newIncomes);
+          Navigator.pop(context, _newIncomes);
+        },
       ),
     );
   }
