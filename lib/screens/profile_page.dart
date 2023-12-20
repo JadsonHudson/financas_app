@@ -223,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   auth.logout();
                   Navigator.popUntil(context, ModalRoute.withName('/'));
                 } catch (e) {
-                  print(e);
+                  throw Exception(e);
                 }
               },
               style: ElevatedButton.styleFrom(

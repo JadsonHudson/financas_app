@@ -1,6 +1,7 @@
-import 'dart:math';
+import 'dart:math' as math;
 
-// import 'package:financas_app/screens/expenses_page.dart';
+import 'package:financas_app/controllers/incomes_controller.dart';
+import 'package:financas_app/models/incomes_model.dart';
 import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/menu_nav_popup.dart';
@@ -20,6 +21,9 @@ class _IncomePageState extends State<IncomePage>
   bool toggle = false;
   late Animation _animation;
   User? user = FirebaseAuth.instance.currentUser;
+  IncomesController incomesController = IncomesController();
+  double pendingIncomes = 0;
+  double expectedIncomes = 0;
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,7 @@ class _IncomePageState extends State<IncomePage>
     _controller.addListener(() {
       setState(() {});
     });
+    sumOfTotalIncomes();
   }
 
   void toggleAnimation() {
@@ -45,6 +50,25 @@ class _IncomePageState extends State<IncomePage>
         toggle = !toggle;
         _controller.forward();
       }
+    });
+  }
+
+  void sumOfTotalIncomes() async {
+    double pending = 0;
+    double expected = 0;
+
+    await incomesController
+        .getAllIncomes(user!.uid)
+        .then((value) => value.map((element) {
+              if (element.received) {
+                pending += element.value;
+              } else {
+                expected += element.value;
+              }
+            }).toList());
+    setState(() {
+      pendingIncomes = pending;
+      expectedIncomes = expected;
     });
   }
 
@@ -185,7 +209,7 @@ class _IncomePageState extends State<IncomePage>
                                               fontWeight: FontWeight.w500),
                                         ),
                                         Text(
-                                          "R\$ 1.000,00",
+                                          "R\$ ${pendingIncomes.toStringAsFixed(2)}",
                                           style: TextStyle(
                                               color: Colors.green.shade400,
                                               fontSize: 20,
@@ -217,7 +241,7 @@ class _IncomePageState extends State<IncomePage>
                                               fontWeight: FontWeight.w500),
                                         ),
                                         Text(
-                                          "R\$ 1.000,00",
+                                          "R\$ ${expectedIncomes.toStringAsFixed(2)}",
                                           style: TextStyle(
                                               color: Colors.green.shade400,
                                               fontSize: 20,
@@ -344,7 +368,119 @@ class _IncomePageState extends State<IncomePage>
                                 ),
                               )
                             ],
-                          )
+                          ),
+                          FutureBuilder<List<IncomesModel>>(
+                            future: incomesController.getAllIncomes(user!.uid),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<IncomesModel>> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                // snapshot.data!.forEach((e) => print(e.value.toString()));
+                                return SizedBox(
+                                  height: 296,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (_, index) {
+                                      IncomesModel incomes =
+                                          snapshot.data![index];
+                                      return ElevatedButton(
+                                          onPressed: () {},
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            elevation: 0,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 0.0, vertical: 8),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors
+                                                            .green.shade400,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: const Icon(
+                                                        Icons.umbrella,
+                                                        color: Colors.white,
+                                                        size: 24,
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 24,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        incomes.category,
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                      Text(
+                                                        (incomes.date
+                                                            .toDate()
+                                                            .toString()),
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              const Spacer(),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    incomes.value
+                                                        .toDouble()
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    incomes.moneyType,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ));
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ],
                       )
                     ]),
@@ -364,7 +500,7 @@ class _IncomePageState extends State<IncomePage>
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Transform.rotate(
-        angle: _animation.value * pi * (3 / 4),
+        angle: _animation.value * math.pi * (3 / 4),
         child: AnimatedContainer(
             duration: const Duration(milliseconds: 375),
             height: 56,

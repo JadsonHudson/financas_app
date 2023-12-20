@@ -1,5 +1,9 @@
-import 'dart:math';
+import 'dart:async';
+import 'dart:developer';
+import 'dart:math' as math;
 
+import 'package:financas_app/controllers/expenses_controller.dart';
+import 'package:financas_app/controllers/incomes_controller.dart';
 import 'package:financas_app/widgets/bottom_app_bar_custom.dart';
 import 'package:financas_app/widgets/button_form.dart';
 import 'package:financas_app/widgets/generic_card.dart';
@@ -22,6 +26,11 @@ class _HomePageState extends State<HomePage>
 
   bool toggle = false;
   late Animation _animation;
+  IncomesController incomesController = IncomesController();
+  ExpensesController expensesController = ExpensesController();
+  double pendingExpenses = 0;
+  double pendingIncomes = 0;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -37,6 +46,36 @@ class _HomePageState extends State<HomePage>
     _controller.addListener(() {
       setState(() {});
     });
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      // Atualiza o estado do widget a cada 5 segundos
+
+      sumOfTotalIncomes();
+    });
+  }
+
+  void sumOfTotalIncomes() async {
+    double sumPendingIncomes = 0;
+    double sumPendingExpenses = 0;
+
+    await incomesController
+        .getAllIncomes(user!.uid)
+        .then((value) => value.map((element) {
+              if (element.received) {
+                sumPendingIncomes += element.value;
+              }
+            }).toList());
+    await expensesController
+        .getAllExpenses(user!.uid)
+        .then((value) => value.map((element) {
+              if (element.payed) {
+                sumPendingExpenses += element.value;
+              }
+            }).toList());
+    log("Atualizando");
+    setState(() {
+      pendingIncomes = sumPendingIncomes;
+      pendingExpenses = sumPendingExpenses;
+    });
   }
 
   void toggleAnimation() {
@@ -49,6 +88,13 @@ class _HomePageState extends State<HomePage>
         _controller.forward();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // Cancela o timer quando o widget é destruído
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -129,7 +175,7 @@ class _HomePageState extends State<HomePage>
                                         color: Colors.grey.shade400,
                                       )),
                                   Text(
-                                    "R\$ 0,00",
+                                    "R\$ ${pendingIncomes - pendingExpenses}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 36.0,
@@ -181,7 +227,7 @@ class _HomePageState extends State<HomePage>
                                               fontWeight: FontWeight.w500,
                                             )),
                                         Text(
-                                          "R\$0.00",
+                                          "R\$ $pendingIncomes",
                                           style: TextStyle(
                                             color: Colors.green.shade400,
                                             fontSize: 20.0,
@@ -224,7 +270,7 @@ class _HomePageState extends State<HomePage>
                                               fontWeight: FontWeight.w500,
                                             )),
                                         Text(
-                                          "R\$0.00",
+                                          "R\$ $pendingExpenses",
                                           style: TextStyle(
                                             color: Colors.red.shade400,
                                             fontSize: 20.0,
@@ -501,7 +547,7 @@ class _HomePageState extends State<HomePage>
         extendBody: true,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Transform.rotate(
-          angle: _animation.value * pi * (3 / 4),
+          angle: _animation.value * math.pi * (3 / 4),
           child: AnimatedContainer(
               duration: const Duration(milliseconds: 375),
               height: 56,

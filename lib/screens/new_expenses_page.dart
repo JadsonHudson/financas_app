@@ -25,7 +25,7 @@ class _NewExpensesPageState extends State<NewExpensesPage> {
   bool _favorite = false;
   String description = "";
   Timestamp date = Timestamp.now();
-  String _category = "Investimento";
+  final String _category = "Investimento";
   @override
   void initState() {
     super.initState();

@@ -11,7 +11,7 @@ class ExpensesController {
     try {
       await expensesService.createExpensesCollection(userId, expenses);
     } catch (e) {
-      print(e);
+      throw Exception(e);
     }
   }
 

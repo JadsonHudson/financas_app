@@ -18,7 +18,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseFirestore fb = FirebaseFirestore.instance;
 }
 
 class MyApp extends StatelessWidget {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -13,6 +15,6 @@ class AuthService {
   }
 
   void logout() async {
-    await auth.signOut().then((value) => print("User Logout"));
+    await auth.signOut().then((value) => log("User Logout"));
   }
 }

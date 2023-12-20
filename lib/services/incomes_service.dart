@@ -47,10 +47,28 @@ class IncomesService {
       date: doc['date'],
       received: doc['received'],
       category: doc['category'],
-       accountId: doc['accountId'],
+       
       fileRefs: doc['fileRefs'],
       moneyType: doc['moneyType'],
       id: doc.id,
     );
+  }
+   Future<List<IncomesModel>> getAllIncomes(String userId) async {
+    QuerySnapshot<Object?> querySnapshot = await incomesRef
+        .doc(userId)
+        .collection('incomes')
+        .get();
+    return querySnapshot.docs
+        .map((doc) => IncomesModel(
+              value: doc['value'],
+              description: doc['description'],
+              date: doc['date'],
+              received: doc['received'],
+              category: doc['category'],
+              fileRefs: doc['fileRefs'],
+              moneyType: doc['moneyType'],
+              id: doc.id,
+            ))
+        .toList();
   }
 }

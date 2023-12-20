@@ -89,8 +89,8 @@ class _GenericCardState extends State<GenericCard> {
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 24.0),
+                padding: const EdgeInsets.only(
+                    right: 20.0,left: 20.0, top: 24.0, bottom: 0),
                 decoration: BoxDecoration(
                   color: const Color(0xFF37343b),
                   borderRadius: getWidget(),

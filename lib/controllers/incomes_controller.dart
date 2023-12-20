@@ -11,7 +11,18 @@ class IncomesController {
     try {
       await incomesService.createIncomesCollection(userId, income);
     } catch (e) {
-      print(e);
+      throw Exception(e);
     }
   }
+
+  Future<List<IncomesModel>> getAllIncomes(String userId) async {
+    try {
+      final list = await incomesService.getAllIncomes(userId);
+      return list;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  
 }

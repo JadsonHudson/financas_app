@@ -22,6 +22,9 @@ class _ExpensesPageState extends State<ExpensesPage>
   late Animation _animation;
   User? user = FirebaseAuth.instance.currentUser;
   ExpensesController expensesController = ExpensesController();
+  
+  double pendingExpenses = 0;
+  double expectedExpenses = 0;
   @override
   void initState() {
     super.initState();
@@ -36,8 +39,26 @@ class _ExpensesPageState extends State<ExpensesPage>
     _controller.addListener(() {
       setState(() {});
     });
+    sumOfTotalExpenses();
   }
+void sumOfTotalExpenses() async {
+    double pending = 0;
+    double expected = 0;
 
+    await expensesController
+        .getAllExpenses(user!.uid)
+        .then((value) => value.map((element) {
+              if (element.payed) {
+                pending += element.value;
+              } else {
+                expected += element.value;
+              }
+            }).toList());
+    setState(() {
+      pendingExpenses = pending;
+      expectedExpenses = expected;
+    });
+  }
   void toggleAnimation() {
     setState(() {
       if (toggle) {
@@ -187,7 +208,7 @@ class _ExpensesPageState extends State<ExpensesPage>
                                               fontWeight: FontWeight.w500),
                                         ),
                                         Text(
-                                          "R\$ 1.000,00",
+                                          "R\$ ${pendingExpenses.toStringAsFixed(2)}",
                                           style: TextStyle(
                                               color: Colors.red.shade400,
                                               fontSize: 20,
@@ -219,7 +240,7 @@ class _ExpensesPageState extends State<ExpensesPage>
                                               fontWeight: FontWeight.w500),
                                         ),
                                         Text(
-                                          "R\$ 1.000,00",
+                                          "R\$ ${expectedExpenses.toStringAsFixed(2)}",
                                           style: TextStyle(
                                               color: Colors.red.shade400,
                                               fontSize: 20,
@@ -360,22 +381,99 @@ class _ExpensesPageState extends State<ExpensesPage>
                               } else {
                                 // snapshot.data!.forEach((e) => print(e.value.toString()));
                                 return SizedBox(
-                                  height: 256,
+                                  height: 296,
                                   width: MediaQuery.of(context).size.width,
                                   child: ListView.builder(
+                                    padding: EdgeInsets.zero,
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (_, index) {
                                       ExpensesModel expenses =
                                           snapshot.data![index];
-                                      return ListTile(
-                                        title: Text(
-                                          expenses.value.toString(),
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16),
-                                        ),
-                                        // Adicione mais detalhes aqui
-                                      );
+                                      return ElevatedButton(
+                                          onPressed: () {},
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            elevation: 0,
+                                            padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Colors.red.shade400,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: const Icon(
+                                                        Icons.umbrella,
+                                                        color: Colors.white,
+                                                        size: 24,
+                                                      )),
+                                                  const SizedBox(
+                                                    width: 24,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        expenses.category,
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                      Text(
+                                                        (expenses.date
+                                                            .toDate()
+                                                            .toString()),
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              const Spacer(),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    expenses.value
+                                                        .toDouble()
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    expenses.moneyType,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ));
                                     },
                                   ),
                                 );

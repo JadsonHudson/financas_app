@@ -4,6 +4,7 @@ import 'package:financas_app/controllers/incomes_controller.dart';
 import 'package:financas_app/models/incomes_model.dart';
 import 'package:financas_app/widgets/generic_card.dart';
 import 'package:financas_app/widgets/input_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewIncomePage extends StatefulWidget {
@@ -19,11 +20,12 @@ class _NewIncomePageState extends State<NewIncomePage> {
   late IncomesController incomesController;
   late IncomesModel _newIncomes;
   final String _moneyType = "BRL";
+  final User? user = FirebaseAuth.instance.currentUser;
   bool _received = true;
   bool _favorite = false;
   String description = "";
-  FieldValue date = FieldValue.serverTimestamp();
-  String _category = "Investimento";
+  Timestamp date = Timestamp.now();
+  final String _category = "Investimento";
   @override
   void initState() {
     super.initState();
@@ -162,7 +164,7 @@ class _NewIncomePageState extends State<NewIncomePage> {
                         const SizedBox(width: 32),
                         ElevatedButton(
                           onPressed: () => {
-                            setState(() => date = FieldValue.serverTimestamp())
+                            setState(() => date = Timestamp.now())
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -186,9 +188,8 @@ class _NewIncomePageState extends State<NewIncomePage> {
                         ElevatedButton(
                           onPressed: () => {
                             setState(() => date = Timestamp.fromDate(
-                                    DateTime.now()
-                                        .subtract(const Duration(days: 1)))
-                                as FieldValue)
+                                DateTime.now()
+                                    .subtract(const Duration(days: 1))))
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -475,9 +476,9 @@ class _NewIncomePageState extends State<NewIncomePage> {
             favorite: _favorite,
             category: _category,
             moneyType: _moneyType,
-            accountId: ModalRoute.of(context)?.settings.arguments as String,
+            
           );
-          incomesController.createIncome(_newIncomes.accountId, _newIncomes);
+          incomesController.createIncome(user!.uid, _newIncomes);
           Navigator.pop(context, _newIncomes);
         },
       ),

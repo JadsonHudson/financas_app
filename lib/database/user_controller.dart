@@ -40,15 +40,15 @@ class UserController {
         );
         await accountService
             .createAccount(account)
-            .then((value) => print('Account created'))
-            .catchError((onError) => {print(onError)});
+            .then((value) => {})
+            .catchError((onError) => throw Exception(onError));
         return true;
       } else {
         throw Exception('Internal Error');
       }
     } catch (e) {
-      print(e);
       return false;
+      
     }
   }
 }
